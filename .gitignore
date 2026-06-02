@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# 虚拟环境
+.venv/
+
+# 模型文件（不入Git，走云存储或DVC）
+models/
+
+# 预测输出
+outputs/
+
+# uv 锁文件（保留 pyproject.toml，锁文件可选提交）
+uv.lock
+
+# 系统文件
+.DS_Store
+Thumbs.db
