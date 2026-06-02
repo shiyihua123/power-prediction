@@ -8,6 +8,7 @@ __pycache__/
 
 # 模型文件（不入Git，走云存储或DVC）
 models/
+rawData/
 
 # 预测输出
 outputs/
