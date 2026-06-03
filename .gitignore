@@ -2,22 +2,51 @@
 __pycache__/
 *.py[cod]
 *.egg-info/
+*.egg
+dist/
+build/
+*.so
 
 # 虚拟环境
 .venv/
+venv/
+env/
 
-# 模型文件（不入Git，走云存储或DVC）
+# IDE / 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# 模型文件（不入Git，体积大）
 models/
+*.pkl
+*.pt
+*.pth
+*.ckpt
+*.h5
+*.joblib
 
-# 原始数据文件目录
+# 原始数据（不入Git）
 rawData/
 
 # 预测输出
 outputs/
 
-# uv 锁文件（保留 pyproject.toml，锁文件可选提交）
+# Lightning 训练日志（不入Git）
+lightning_logs/
+
+# 环境配置
+.python-version
 uv.lock
 
-# 系统文件
-.DS_Store
-Thumbs.db
+# 敏感信息
+.env
+*.env
+.env.local
