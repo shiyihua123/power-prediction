@@ -1,4 +1,121 @@
+# 对比Montel模型
+Montel: 
+  model_name: "Montel"
+  predict_path: "rawData/SE2_Price_Spot_EUR_MWh_H_Forecast/forecast_issued_00_prefix_latest_fix.csv"
+  compare_plot_k: 3
+# 训练配置
+training:
+  devices: "7"          # 设备数量（1=单卡）。配合 CUDA_VISIBLE_DEVICES=7 指定具体 GPU
+  seed: 42             # 固定随机种子；注释掉该行则不固定
+  loss: "huber"
+  learning_rate: 0.001
+  scaler_type: "robust" # robust\standard
+
+# 模型配置
 model:
-  name: "Naive"
+  name: "NHITS"
   params:
-    horizon: 24
+    input_size: 1344   # 可选，不写则默认48
+    max_steps: 5000
+    early_stop_patience_steps: 10
+    windows_batch_size: 1024
+    inference_windows_batch_size: 64
+# 数据配置
+data:
+  # 目标列名
+  target_col: "price_SE2"
+  raw_col:
+    - "date"
+    - "value"
+
+  # 文件字典：列名 -> 文件路径
+  files:
+    price_SE2: 'rawData/SE2_Price_Spot_EUR_MWh_NordPool_15min_Actual/actual_min_to_H_true_latest.csv'
+
+    price_SE1: 'rawData/SE1_Price_Spot_EUR_MWh_NordPool_15min_Actual/actual_min_to_H_true_latest.csv'
+    price_SE3: 'rawData/SE3_Price_Spot_EUR_MWh_NordPool_15min_Actual/actual_min_to_H_true_latest.csv'
+    price_SE4: 'rawData/SE4_Price_Spot_EUR_MWh_NordPool_15min_Actual/actual_min_to_H_true_latest.csv'
+
+    # loadidual_SE2: '/home/syh/workplace/PythonProject/power-prediction/rawData/SE2_Residual_Load_MWh_h_H_Actual/MW_latest.csv'
+    # SE_Residual_Load: 'rawData/SE_Residual_Load_MWh_h_H_Actual/MW_latest.csv'
+
+    # SE2_Consumption: 'rawData/SE2_Consumption_MWh_h_H_Actual/MW_latest.csv'
+    # SE_Consumption: 'rawData/SE_Consumption_MWh_h_H_Actual/MW_latest.csv'
+
+    # SE2_SE3_Exchange_Physical_Flow: 'rawData/SE2_SE3_Exchange_Physical_Flow_MWh_h_H_Actual/MW_latest.csv'
+    # SE3_SE2_Exchange_Physical_Flow: 'rawData/SE3_SE2_Exchange_Physical_Flow_MWh_h_H_Actual/MW_latest.csv'
+    # SE2_SE1_Exchange_Physical_Flow: 'rawData/SE2_SE1_Exchange_Physical_Flow_MWh_h_H_Actual/MW_latest.csv'
+    # SE2_NO4_Exchange_Physical_Flow: 'rawData/SE2_NO4_Exchange_Physical_Flow_MWh_h_H_Actual/MW_latest.csv'
+    # SE2_Exchange_Physical_Flow_Net_export: 'rawData/SE2_Exchange_Physical_Flow_Net_export_MWh_h_H_Actual/MW_latest.csv'
+    # SE2_Exchange_Physical_Flow_Net_Import: 'rawData/SE2_Exchange_Physical_Flow_Net_Import_MWh_h_H_Actual/MW_latest.csv'
+
+    # SE2_Wind_Power_Production: 'rawData/SE2_Wind_Power_Production_MWh_h_H_Actual/MW_latest.csv'
+    # SE2_Solar_Photovoltaic_Production: 'rawData/SE2_Solar_Photovoltaic_Production_MWh_h_H_Actual/MW_latest.csv'
+    # SE2_Hydro_Power_Production: 'rawData/SE2_Hydro_Power_Production_MWh_h_H_Actual/MW_latest.csv'
+
+    # SE2_Consumption_Temperature: 'rawData/SE2_Consumption_Temperature_°C_H_Actual/MW_latest.csv'
+  
+  # 时间频率：'h' 表示小时
+  insured_date: "2026-06-03"
+  insured_time: "0"
+  freq: "h"
+  prediction_window: 1056
+  
+  # 训练/验证/测试划分点（格式：YYYY-MM-DD）
+  # 数据范围：从最早共同交集开始，到 test_end 结束（可选）
+  train:
+    start: "2020-01-01 00:00:00"
+    end:   "2023-12-31 23:00:00"
+  val:
+    start: "2024-01-01 00:00:00"
+    end:   "2024-12-31 23:00:00"
+  test:
+    start: "2025-01-01 00:00:00"
+    end:   "2026-03-01 23:00:00"
+  
+  feature_kwargs:
+    local_tz: "Europe/Stockholm"
+    time_features:
+      # - "hour_sin"
+      # - "hour_cos"
+      # - "weekday_sin"
+      # - "weekday_cos"
+      # - "month_sin"
+      # - "month_cos"
+      # - "hour"
+      # - "weekday"
+      # - "month"
+      # - "how_sin"
+      # - "how_cos"
+      # - "doy_sin"
+      # - "doy_cos"
+      # - "is_weekend"
+      # - "is_workday"
+      # - "is_night"
+      # - "is_morning_peak"
+      # - "is_evening_peak"
+      # - "is_business_hour"
+      # - "is_offpeak"
+      # - "is_winter"
+      # - "is_summer"
+      # - "is_heating_season"
+      # - "utc_offset"
+      # - "is_dst"
+    future_features:
+      # - "loadidual_SE2"
+      # - "SE_Residual_Load"
+      # - "SE2_Consumption"
+      # - "SE_Consumption"
+      # - "SE2_SE3_Exchange_Physical_Flow"
+      # - "SE3_SE2_Exchange_Physical_Flow"
+      # - "SE2_SE1_Exchange_Physical_Flow"
+      # - "SE2_NO4_Exchange_Physical_Flow"
+      # - "SE2_Exchange_Physical_Flow_Net_export"
+      # - "SE2_Exchange_Physical_Flow_Net_Import"
+      # - "SE2_Wind_Power_Production"
+      # - "SE2_Solar_Photovoltaic_Production"
+      # - "SE2_Hydro_Power_Production"
+      # - "SE2_Consumption_Temperature"
+    delta_features:
+      - "price_delta_SE3_SE2"
+      - "price_delta_SE4_SE2"

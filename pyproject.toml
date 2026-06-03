@@ -6,7 +6,15 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "joblib>=1.5.3",
+    "matplotlib>=3.10.9",
+    "neuralforecast>=3.1.9",
     "numpy>=2.4.6",
     "pandas>=3.0.3",
     "pyyaml>=6.0.3",
+    "torch==2.6.0",
+    "torchaudio==2.6.0",
+    "torchvision==0.21.0",
 ]
+
+[[tool.uv.index]]
+url = "https://download.pytorch.org/whl/cu124"

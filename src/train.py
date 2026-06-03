@@ -1,21 +1,23 @@
+import random
+import numpy as np
 import yaml
-from src.data_pipeline import load_demo_data
+from src.data_pipeline import prepare_data, build_future_df
 from src.models.model_registry import get_model
 
-# 1. 加载配置
-with open('config.yaml', 'r') as f:
+with open('config.yaml') as f:
     config = yaml.safe_load(f)
 
-model_name = config['model']['name']
-model_params = config['model']['params']
+name = config['model']['name']
 
-# 2. 获取数据
-X, y = load_demo_data()
+df_full = prepare_data(config)
+_, horizon_total = build_future_df(df_full, config)
+config['horizon_total'] = horizon_total
+model = get_model(name, config)
+model.fit(df_full)
 
-# 3. 创建模型并训练
-model = get_model(model_name, **model_params)
-model.fit(X, y)
+import os
+os.makedirs(f"models/{name}", exist_ok=True)
 
 # 4. 保存模型
-model.save('models/latest.pkl')
-print(f"模型 {model_name} 训练完成，已保存到 models/latest.pkl")
+model.save(f"models/{name}/model.pkl")
+print(f"模型 {name} 训练完成，已保存到 models/{name}/model.pkl")
