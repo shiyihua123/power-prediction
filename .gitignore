@@ -25,7 +25,7 @@ Thumbs.db
 .ipynb_checkpoints/
 
 # 模型文件（不入Git，体积大）
-models/
+models_results/
 *.pkl
 *.pt
 *.pth

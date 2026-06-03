@@ -20,7 +20,7 @@ df_full = prepare_data(config)
 future_df, horizon_total = build_future_df(df_full, config)
 config['horizon_total'] = horizon_total
 
-model = get_model(model_name, config).load(f"models/{model_name}/model.pkl", config)
+model = get_model(model_name, config).load(f"models_results/{model_name}/model.pkl", config)
 
 pred_df = model.predict(future_df)
 prediction_window = config['data']['prediction_window']

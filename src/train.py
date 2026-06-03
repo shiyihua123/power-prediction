@@ -25,6 +25,6 @@ config['horizon_total'] = horizon_total
 model = get_model(name, config)
 model.fit(df_full)
 
-os.makedirs(f"models/{name}", exist_ok=True)
-model.save(f"models/{name}/model.pkl")
-print(f"模型 {name} 训练完成，已保存到 models/{name}/model.pkl")
+os.makedirs(f"models_results/{name}", exist_ok=True)
+model.save(f"models_results/{name}/model.pkl")
+print(f"模型 {name} 训练完成，已保存到 models_results/{name}/model.pkl")
