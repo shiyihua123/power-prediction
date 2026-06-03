@@ -35,6 +35,7 @@ models/
 
 # 原始数据（不入Git）
 rawData/
+rawData
 
 # 预测输出
 outputs/
