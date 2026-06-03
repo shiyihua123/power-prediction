@@ -1,8 +1,17 @@
+"""交叉验证测试脚本。"""
+import os
+import sys
+
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+os.chdir(PROJECT_ROOT)
+sys.path.insert(0, PROJECT_ROOT)
+
 import random
 import numpy as np
 import yaml
-from data_pipeline import prepare_data, build_future_df
-from models.model_registry import get_model
+from src.data_pipeline import prepare_data, build_future_df
+from src.models.model_registry import get_model
+import src.models.neuralforecast_model  # 触发 @register_model 装饰器
 import pandas as pd
 
 with open('config.yaml') as f:
@@ -11,15 +20,12 @@ with open('config.yaml') as f:
 model_name = config['model']['name']
 
 df_full = prepare_data(config)
-# _, horizon_total = build_future_df(df_full, config)
 config['horizon_total'] = config['data']['prediction_window'] + 24
 model = get_model(model_name, config)
 
 cv_results = model.cross_validate(df_full)
 
-# 保存cv_results为csv
 output_path = f'outputs/{model_name}/cv_results_{pd.Timestamp.now().strftime("%Y%m%d")}.csv'
-import os
 os.makedirs(f'outputs/{model_name}', exist_ok=True)
 cv_results.to_csv(output_path, index=False)
 

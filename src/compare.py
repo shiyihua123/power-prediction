@@ -1,10 +1,16 @@
 # 读取Montel模型预测结果和自己模型的结果，找出共同时间点的交集
+import os
+import sys
+
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+os.chdir(PROJECT_ROOT)
+sys.path.insert(0, PROJECT_ROOT)
+
 import pandas as pd
 import yaml
 import numpy as np
 import matplotlib.pyplot as plt
 import random
-import os
 import shutil
 
 def plot_windows_with_time(ground_truth, montel_predict, model_predict, time_array,
