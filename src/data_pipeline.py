@@ -295,8 +295,8 @@ def build_future_df(df_full, config):
     
     # 添加时间特征到未来 df
     local_tz = config['data']['feature_kwargs']['local_tz']
-    time_features = config['data']['feature_kwargs']['time_features']
-
+    time_features = config['data']['feature_kwargs'].get('time_features', []) or []
+    
     # 转为本地时区（操作时间列而非索引）
     future_df[time_col] = future_df[time_col].dt.tz_convert(local_tz)
     future_df = add_time_feature(future_df, time_features, time_col)
