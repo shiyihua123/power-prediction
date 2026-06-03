@@ -1,12 +1,8 @@
-import os
-import sys
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 import random
 import numpy as np
 import yaml
-from src.data_pipeline import prepare_data, build_future_df
-from src.models.model_registry import get_model
+from data_pipeline import prepare_data, build_future_df
+from models.model_registry import get_model
 
 with open('config.yaml') as f:
     config = yaml.safe_load(f)
