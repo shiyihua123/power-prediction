@@ -12,6 +12,7 @@ training:
   scaler_type: "robust" # robust\standard
 
 # 模型名
+# model_name: "LightGBM"
 model_name: "NHITS"
 # 数据配置
 data:
@@ -69,10 +70,10 @@ data:
   feature_kwargs:
     local_tz: "Europe/Stockholm"
     time_features:
-      # - "hour_sin"
-      # - "hour_cos"
-      # - "weekday_sin"
-      # - "weekday_cos"
+      - "hour_sin"
+      - "hour_cos"
+      - "weekday_sin"
+      - "weekday_cos"
       # - "month_sin"
       # - "month_cos"
       # - "hour"
@@ -80,8 +81,8 @@ data:
       # - "month"
       # - "how_sin"
       # - "how_cos"
-      # - "doy_sin"
-      # - "doy_cos"
+      - "doy_sin"
+      - "doy_cos"
       # - "is_weekend"
       # - "is_workday"
       # - "is_night"
