@@ -7,3 +7,19 @@ NHITS:
     windows_batch_size: 1024
     inference_windows_batch_size: 64
 
+LightGBM:
+  params:
+    objective: "huber"
+    n_estimators: 1000
+    learning_rate: 0.05
+    max_depth: 7
+    num_leaves: 31
+    n_jobs: 2
+    random_state: 42
+    reg_alpha: 0.1          # L1 正则
+    reg_lambda: 0.1          # L2 正则
+    min_child_samples: 20   # 叶子节点最少样本数
+    colsample_bytree: 0.8   # 每棵树随机选 80% 特征
+    subsample: 0.8   # 每棵树随机选 80% 样本
+    subsample_freq: 5         # 每 5 轮做一次 subsample
+
