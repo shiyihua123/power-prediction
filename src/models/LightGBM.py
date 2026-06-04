@@ -9,9 +9,9 @@ from sklearn.metrics import mean_absolute_error
 class LightGBMModel(BaseModel):
     """LightGBM 回归模型，只使用时间特征预测电价。"""
 
-    def __init__(self, config):
+    def __init__(self, config, model_config):
         self.config = config
-        self.model_name = config['model']['name']
+        self.model_name = config['model_name']
         self.target_col = config['data']['target_col']
         self.time_col = config['data']['raw_col'][0]
         self.freq = config['data']['freq']
@@ -21,7 +21,7 @@ class LightGBMModel(BaseModel):
         self.feature_cols = list(time_features)
 
         # LightGBM 参数
-        model_params = dict(config['model'].get('params', {}))
+        model_params = dict(model_config['LightGBM'].get('params', {}))
         self.lgb_params = model_params
 
         self.model = lgb.LGBMRegressor(**self.lgb_params)
@@ -75,19 +75,13 @@ class LightGBMModel(BaseModel):
     # ─────────── 交叉验证 ───────────
 
     def cross_validate(self, df_full: pd.DataFrame) -> pd.DataFrame:
-        df_full = df_full.sort_values(self.time_col).reset_index(drop=True)
+        if self.model is None:
+            raise RuntimeError("模型未训练，请先调用 fit()")
 
-        train = df_full[df_full[self.time_col] < self.test_start]
-        test = df_full[(df_full[self.time_col] >= self.test_start)]
+        df = df_full.sort_values(self.time_col).reset_index(drop=True)
 
-        # 重新训练
-        val = df_full[(df_full[self.time_col] >= self.val_start) & (df_full[self.time_col] < self.test_start)]
-        self.model = lgb.LGBMRegressor(**self.lgb_params)
-        self.model.fit(
-            train[self.feature_cols], train[self.target_col],
-            eval_set=[(val[self.feature_cols], val[self.target_col])],
-            callbacks=[lgb.early_stopping(30), lgb.log_evaluation(200)],
-        )
+        # 取测试集部分（不重新训练，直接用 fit() 训练好的模型）
+        test = df[df[self.time_col] >= self.test_start].copy()
 
         # 在测试集上预测
         y_pred = self.model.predict(test[self.feature_cols])
@@ -95,13 +89,36 @@ class LightGBMModel(BaseModel):
         cv_results = pd.DataFrame({
             "ds": test[self.time_col].values,
             "y": test[self.target_col].values,
-            "LightGBM": y_pred,
+            self.model_name: y_pred,
         })
 
-        # 按天切分窗口
-        local_tz = self.config['data']['feature_kwargs']['local_tz']
+        # 按天切分窗口（和 NeuralForecast 行为一致）
         cv_results['ds'] = pd.to_datetime(cv_results['ds'])
-        cv_selected = self._select_daily_windows(cv_results, local_tz)
+
+        local_tz = self.config['data']['feature_kwargs']['local_tz']
+        prediction_window = self.config['data']['prediction_window']
+        start_hour = int(self.config['data'].get('insured_time', '0'))
+
+        cv_results['ds_local'] = cv_results['ds'].dt.tz_convert(local_tz)
+
+        # 筛选每天从指定小时开始的窗口
+        valid_cutoffs = (
+            cv_results
+            .groupby(cv_results['ds_local'].dt.date)['ds_local']
+            .min()
+            .loc[lambda s: s.dt.hour == start_hour]
+            .index
+        )
+
+        cv_selected = (
+            cv_results[cv_results['ds_local'].dt.date.isin(valid_cutoffs)]
+            .groupby(cv_results['ds_local'].dt.date)
+            .tail(prediction_window)
+        )
+
+        cv_selected["begin_utc"] = cv_selected.groupby(cv_results['ds_local'].dt.date)["ds"].transform("first")
+        cv_selected = cv_selected.drop(columns=["ds_local"]).reset_index(drop=True)
+
         return cv_selected
 
     # ─────────── 保存 / 加载 ───────────
@@ -112,7 +129,7 @@ class LightGBMModel(BaseModel):
         joblib.dump({"model": self.model, "feature_cols": self.feature_cols}, path)
 
     @classmethod
-    def load(cls, path: str, config=None):
+    def load(cls, path: str, config=None, model_config=None):
         """加载模型。
 
         Args:
@@ -121,8 +138,10 @@ class LightGBMModel(BaseModel):
         """
         if config is None:
             raise ValueError("加载模型时必须提供 config 参数")
+        if model_config is None:
+            raise ValueError("加载模型时必须提供 model_config 参数")
         import joblib
-        obj = cls(config)
+        obj = cls(config, model_config)
         data = joblib.load(path)
         obj.model = data["model"]
         obj.feature_cols = data["feature_cols"]

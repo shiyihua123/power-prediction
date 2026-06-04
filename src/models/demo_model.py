@@ -6,7 +6,7 @@ from .model_registry import register_model
 @register_model("Demo")
 class DemoModel(BaseModel):
     """持久性模型：用最后的观测值重复作为预测"""
-    def __init__(self, config):
+    def __init__(self, config, model_config):
         pass
 
     def fit(self, df_full):
@@ -22,5 +22,5 @@ class DemoModel(BaseModel):
         pass
 
     @classmethod
-    def load(cls, path: str, config=None):
+    def load(cls, path: str, config=None, model_config=None):
         pass
