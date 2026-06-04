@@ -160,7 +160,7 @@ class NeuralForecastModel(BaseModel):
             val_size=self.config['horizon_total'],
             test_size=self.test_size
         )
-        print(cv_results)
+        # print(cv_results)
         
         local_tz = self.config['data']['feature_kwargs']['local_tz']
         prediction_window = self.config['data']['prediction_window']
