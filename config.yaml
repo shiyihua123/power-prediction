@@ -13,6 +13,7 @@ training:
 
 # 模型名
 model_name: "LightGBM"
+# model_name: "NHITS"
 # 数据配置
 data:
   # 目标列名
