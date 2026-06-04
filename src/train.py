@@ -18,7 +18,7 @@ with open('config.yaml') as f:
 
 with open('model_config.yaml') as f:
     model_config = yaml.safe_load(f)
-
+# asd asd as as
 
 
 name = config['model_name']
