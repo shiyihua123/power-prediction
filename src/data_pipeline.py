@@ -302,6 +302,7 @@ def build_future_df(df_full, config):
     # 转为本地时区（操作时间列而非索引）
     future_df[time_col] = future_df[time_col].dt.tz_convert(local_tz)
     future_df = add_time_feature(future_df, time_features, time_col)
+    
     future_df[time_col] = future_df[time_col].dt.tz_convert('UTC')
     
     return future_df, horizon_total

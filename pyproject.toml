@@ -3,18 +3,27 @@ name = "power-prediction"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.10,<3.14"
 dependencies = [
-    "joblib>=1.5.3",
-    "matplotlib>=3.10.9",
+    "joblib>=1.0",
+    "lightgbm>=4.6.0",
+    "matplotlib>=3.5",
     "neuralforecast>=3.1.9",
-    "numpy>=2.4.6",
-    "pandas>=3.0.3",
-    "pyyaml>=6.0.3",
+    "numpy>=2.0",
+    "pandas>=2.0",
+    "pyyaml>=6.0",
+    "scikit-learn>=1.7.2",
     "torch==2.6.0",
     "torchaudio==2.6.0",
     "torchvision==0.21.0",
 ]
 
 [[tool.uv.index]]
+name = "pytorch-cu124"
 url = "https://download.pytorch.org/whl/cu124"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu124" }
+torchaudio = { index = "pytorch-cu124" }
+torchvision = { index = "pytorch-cu124" }
