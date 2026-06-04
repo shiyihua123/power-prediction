@@ -13,13 +13,21 @@ training:
 
 # 模型配置
 model:
-  name: "NHITS"
+  name: "LightGBM"
   params:
-    input_size: 1344   # 可选，不写则默认48
-    max_steps: 5000
-    early_stop_patience_steps: 10
-    windows_batch_size: 1024
-    inference_windows_batch_size: 64
+    objective: "huber"
+    n_estimators: 1000
+    learning_rate: 0.05
+    max_depth: 7
+    num_leaves: 31
+    n_jobs: 2
+    random_state: 42
+    reg_alpha: 0.1          # L1 正则
+    reg_lambda: 0.1          # L2 正则
+    min_child_samples: 20   # 叶子节点最少样本数
+    colsample_bytree: 0.8   # 每棵树随机选 80% 特征
+    subsample: 0.8   # 每棵树随机选 80% 样本
+    subsample_freq: 5         # 每 5 轮做一次 subsample
 # 数据配置
 data:
   # 目标列名
@@ -76,31 +84,31 @@ data:
   feature_kwargs:
     local_tz: "Europe/Stockholm"
     time_features:
-      # - "hour_sin"
-      # - "hour_cos"
-      # - "weekday_sin"
-      # - "weekday_cos"
-      # - "month_sin"
-      # - "month_cos"
-      # - "hour"
-      # - "weekday"
-      # - "month"
-      # - "how_sin"
-      # - "how_cos"
-      # - "doy_sin"
-      # - "doy_cos"
-      # - "is_weekend"
-      # - "is_workday"
-      # - "is_night"
-      # - "is_morning_peak"
-      # - "is_evening_peak"
-      # - "is_business_hour"
-      # - "is_offpeak"
-      # - "is_winter"
-      # - "is_summer"
-      # - "is_heating_season"
-      # - "utc_offset"
-      # - "is_dst"
+      - "hour_sin"
+      - "hour_cos"
+      - "weekday_sin"
+      - "weekday_cos"
+      - "month_sin"
+      - "month_cos"
+      - "hour"
+      - "weekday"
+      - "month"
+      - "how_sin"
+      - "how_cos"
+      - "doy_sin"
+      - "doy_cos"
+      - "is_weekend"
+      - "is_workday"
+      - "is_night"
+      - "is_morning_peak"
+      - "is_evening_peak"
+      - "is_business_hour"
+      - "is_offpeak"
+      - "is_winter"
+      - "is_summer"
+      - "is_heating_season"
+      - "utc_offset"
+      - "is_dst"
     future_features:
       # - "loadidual_SE2"
       # - "SE_Residual_Load"
