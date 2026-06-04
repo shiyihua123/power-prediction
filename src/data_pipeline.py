@@ -248,6 +248,8 @@ def build_future_df(df_full, config):
     time_col = config['data']['raw_col'][0]
     prediction_window = config['data']['prediction_window']
     insured_date_str = config['data']['insured_date']
+    if insured_date_str == "auto":
+        insured_date_str = pd.Timestamp.now().strftime("%Y-%m-%d")
     insured_time = config['data']['insured_time']
     freq = config['data']['freq']
     local_tz = config['data']['feature_kwargs']['local_tz']

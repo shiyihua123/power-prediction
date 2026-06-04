@@ -11,15 +11,8 @@ training:
   learning_rate: 0.001
   scaler_type: "robust" # robust\standard
 
-# 模型配置
-model:
-  name: "NHITS"
-  params:
-    input_size: 1344   # 可选，不写则默认48
-    max_steps: 5000
-    early_stop_patience_steps: 10
-    windows_batch_size: 1024
-    inference_windows_batch_size: 64
+# 模型名
+model_name: "NHITS"
 # 数据配置
 data:
   # 目标列名
@@ -56,7 +49,7 @@ data:
     # SE2_Consumption_Temperature: 'rawData/SE2_Consumption_Temperature_°C_H_Actual/MW_latest.csv'
   
   # 时间频率：'h' 表示小时
-  insured_date: "2026-06-03"
+  insured_date: "auto"   # "auto" = 当天日期，或写 "2026-06-04" 固定日期
   insured_time: "0"
   freq: "h"
   prediction_window: 1056

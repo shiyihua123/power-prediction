@@ -152,7 +152,7 @@ h_cols = [c for c in montel_pred.columns if c.startswith("h")]
 montel_window_match = len(h_cols) == config['data']['prediction_window']
 
 # 2. 读取自己模型的交叉验证结果
-model_name = config['model']['name']
+model_name = config['model_name']
 cv_results_path = f'outputs/{model_name}/cv_results_{pd.Timestamp.now().strftime("%Y%m%d")}.csv'
 cv_results = pd.read_csv(cv_results_path)
 

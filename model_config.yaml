@@ -1,0 +1,9 @@
+# 模型配置
+NHITS:
+  params:
+    input_size: 1344   # 可选，不写则默认48
+    max_steps: 50
+    early_stop_patience_steps: 10
+    windows_batch_size: 1024
+    inference_windows_batch_size: 64
+

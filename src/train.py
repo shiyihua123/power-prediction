@@ -12,17 +12,21 @@ import numpy as np
 import yaml
 from src.data_pipeline import prepare_data, build_future_df
 from src.models.model_registry import get_model
-import src.models.neuralforecast_model  # 触发 @register_model 装饰器
 
 with open('config.yaml') as f:
     config = yaml.safe_load(f)
 
-name = config['model']['name']
+with open('model_config.yaml') as f:
+    model_config = yaml.safe_load(f)
+
+
+
+name = config['model_name']
 
 df_full = prepare_data(config)
 _, horizon_total = build_future_df(df_full, config)
 config['horizon_total'] = horizon_total
-model = get_model(name, config)
+model = get_model(name, config, model_config)
 model.fit(df_full)
 
 os.makedirs(f"models_results/{name}", exist_ok=True)

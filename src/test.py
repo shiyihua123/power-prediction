@@ -11,17 +11,19 @@ import numpy as np
 import yaml
 from src.data_pipeline import prepare_data, build_future_df
 from src.models.model_registry import get_model
-import src.models.neuralforecast_model  # 触发 @register_model 装饰器
 import pandas as pd
 
 with open('config.yaml') as f:
     config = yaml.safe_load(f)
 
-model_name = config['model']['name']
+with open('model_config.yaml') as f:
+    model_config = yaml.safe_load(f)
+
+model_name = config['model_name']
 
 df_full = prepare_data(config)
 config['horizon_total'] = config['data']['prediction_window'] + 24
-model = get_model(model_name, config)
+model = get_model(model_name, config, model_config)
 
 cv_results = model.cross_validate(df_full)
 

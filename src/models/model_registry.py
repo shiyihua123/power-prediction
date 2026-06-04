@@ -7,9 +7,9 @@ def register_model(name):
         return cls
     return decorator
 
-def get_model(name, config):
+def get_model(name, config, model_config=None):
     """根据名字和参数创建模型实例"""
     if name not in _MODEL_REGISTRY:
         available = list(_MODEL_REGISTRY.keys())
         raise ValueError(f"未知模型: '{name}'。当前可用模型: {available}")
-    return _MODEL_REGISTRY[name](config)
+    return _MODEL_REGISTRY[name](config, model_config)

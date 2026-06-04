@@ -36,13 +36,14 @@ torch.set_float32_matmul_precision('medium')
 class NeuralForecastModel(BaseModel):
     """通用 NeuralForecast 模型封装，支持所有 neuralforecast.models 中的模型"""
 
-    def __init__(self, config):
+    def __init__(self, config, model_config):
+        self.model_config = model_config
         
         self.config = config
         self.freq = config['data']['freq']
         
         # 获取目标 NF 模型类
-        model_name = config['model']['name']
+        model_name = config['model_name']
         try:
             model_cls = getattr(nf_models, model_name)
         except AttributeError:
@@ -72,9 +73,9 @@ class NeuralForecastModel(BaseModel):
             loss = HuberLoss(5)
         else:
             raise ValueError(f"未知的损失函数: '{loss_name}'，可用: mae, huber")
-
+        
         # 构建模型参数：先从 config params 取，再覆盖通用参数
-        model_params = dict(config['model']['params'])
+        model_params = dict(model_config[model_name]['params'])
         model_params.update({
             'h': config['horizon_total'],
             'futr_exog_list': futr_exog_list,
@@ -192,13 +193,13 @@ class NeuralForecastModel(BaseModel):
         joblib.dump(self.model, path)
 
     @classmethod
-    def load(cls, path: str, config=None):
+    def load(cls, path: str, config=None, model_config=None):
         """加载保存的模型"""
         if config is None:
             raise ValueError("加载模型时必须提供 config 参数")
 
         import joblib
-        obj = cls(config)
+        obj = cls(config, model_config)
         loaded_model = joblib.load(path)
         obj.model = loaded_model
         return obj

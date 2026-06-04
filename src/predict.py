@@ -10,17 +10,19 @@ import yaml
 import pandas as pd
 from src.models.model_registry import get_model
 from src.data_pipeline import prepare_data, build_future_df
-import src.models.neuralforecast_model  # 触发 @register_model 装饰器
 
 with open('config.yaml', 'r') as f:
     config = yaml.safe_load(f)
-model_name = config['model']['name']
+with open('model_config.yaml') as f:
+    model_config = yaml.safe_load(f)
+    
+model_name = config['model_name']
 
 df_full = prepare_data(config)
 future_df, horizon_total = build_future_df(df_full, config)
 config['horizon_total'] = horizon_total
 
-model = get_model(model_name, config).load(f"models_results/{model_name}/model.pkl", config)
+model = get_model(model_name, config, model_config).load(f"models_results/{model_name}/model.pkl", config, model_config)
 
 pred_df = model.predict(future_df)
 prediction_window = config['data']['prediction_window']
