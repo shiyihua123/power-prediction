@@ -43,12 +43,12 @@ class NeuralForecastModel(BaseModel):
         self.freq = config['data']['freq']
         
         # 获取目标 NF 模型类
-        model_name = config['model_name']
+        self.model_name = config['model_name']
         try:
-            model_cls = getattr(nf_models, model_name)
+            model_cls = getattr(nf_models, self.model_name)
         except AttributeError:
             available = [m for m in dir(nf_models) if not m.startswith('_')]
-            raise ValueError(f"未知的 NeuralForecast 模型: '{model_name}'，可用: {available}")
+            raise ValueError(f"未知的 NeuralForecast 模型: '{self.model_name}'，可用: {available}")
 
         # 特征列表
         time_features = config['data']['feature_kwargs'].get('time_features', []) or []
@@ -75,7 +75,7 @@ class NeuralForecastModel(BaseModel):
             raise ValueError(f"未知的损失函数: '{loss_name}'，可用: mae, huber")
         
         # 构建模型参数：先从 config params 取，再覆盖通用参数
-        model_params = dict(model_config[model_name]['params'])
+        model_params = dict(model_config[self.model_name]['params'])
         model_params.update({
             'h': config['horizon_total'],
             'futr_exog_list': futr_exog_list,
@@ -104,7 +104,7 @@ class NeuralForecastModel(BaseModel):
         self.test_end = pd.to_datetime(self.config['data']['test']['end']).tz_localize('UTC')
 
         self.test_size = len(pd.date_range(start=self.test_start, end=self.test_end, freq=self.freq))
-
+        
     def fit(self, df_full):
         df = self._to_long_format(df_full)
         df = df[df['ds'] >= self.train_start]
@@ -115,6 +115,8 @@ class NeuralForecastModel(BaseModel):
     def predict(self, futr_df):
         df = self._to_long_format(futr_df)
         fcst = self.model.predict(futr_df=df)
+        fcst = fcst.drop(columns=['unique_id'])
+        fcst.rename(columns={'ds': 'date', self.model_name: 'ours'}, inplace=True)
         return fcst
 
     def select_daily_cv_windows(
@@ -127,23 +129,21 @@ class NeuralForecastModel(BaseModel):
         cv_results = cv_results.copy()
         cv_results["ds_local"] = cv_results["ds"].dt.tz_convert(local_tz)
 
-        # 筛选指定小时开始的 cutoff
-        valid_cutoffs = (
-            cv_results
-            .groupby("cutoff")["ds_local"]
-            .min()
-            .loc[lambda s: s.dt.hour == start_hour]
-            .index
-        )
+        min_ds_by_cutoff = cv_results.groupby("cutoff")["ds_local"].min()
 
-        cv_selected = (
-            cv_results[cv_results["cutoff"].isin(valid_cutoffs)]
-            .groupby("cutoff")
-            .tail(prediction_window)
-        )
+        valid_cutoffs = min_ds_by_cutoff.loc[min_ds_by_cutoff.dt.hour == start_hour].index
+        
+        cv_selected = cv_results[cv_results["cutoff"].isin(valid_cutoffs)]
+
+        cv_selected = cv_selected.drop(columns=["ds_local"])
+
+        cv_selected['ds'] = cv_selected['ds'].dt.tz_convert("UTC")
+
+        cv_selected = cv_selected.groupby("cutoff").tail(prediction_window)
 
         cv_selected["begin_utc"] = cv_selected.groupby("cutoff")["ds"].transform("first")
-        cv_selected = cv_selected.drop(columns=["ds_local"])
+
+        cv_selected = cv_selected.drop(columns=['cutoff', 'unique_id'])
 
         return cv_selected
 
@@ -160,7 +160,6 @@ class NeuralForecastModel(BaseModel):
             val_size=self.config['horizon_total'],
             test_size=self.test_size
         )
-        # print(cv_results)
         
         local_tz = self.config['data']['feature_kwargs']['local_tz']
         prediction_window = self.config['data']['prediction_window']
@@ -172,9 +171,6 @@ class NeuralForecastModel(BaseModel):
             local_tz=local_tz,
             start_hour=int(self.config['data']['insured_time']),
         )
-        cv_selected['ds'] = cv_selected['ds'].dt.tz_convert("UTC")
-        cv_selected['begin_utc'] = cv_selected['begin_utc'].dt.tz_convert("UTC")
-        cv_selected = cv_selected.drop(columns=['cutoff', 'unique_id'])
 
         return cv_selected
 

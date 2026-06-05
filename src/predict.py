@@ -27,8 +27,8 @@ model = get_model(model_name, config, model_config).load(f"models_results/{model
 pred_df = model.predict(future_df)
 prediction_window = config['data']['prediction_window']
 pred_df = pred_df.tail(prediction_window)
-output_path = f'outputs/{model_name}/prediction_{pd.Timestamp.now().strftime("%Y%m%d")}.csv'
-os.makedirs(f'outputs/{model_name}', exist_ok=True)
+output_path = f'outputs/{model_name}/prediction/prediction_{pd.Timestamp.now().strftime("%Y%m%d")}.csv'
+os.makedirs(f'outputs/{model_name}/prediction', exist_ok=True)
 pred_df.to_csv(output_path, index=False)
 
 print(f"预测结果已保存到 {output_path}")

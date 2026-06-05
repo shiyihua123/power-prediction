@@ -153,7 +153,7 @@ montel_window_match = len(h_cols) == config['data']['prediction_window']
 
 # 2. 读取自己模型的交叉验证结果
 model_name = config['model_name']
-cv_results_path = f'outputs/{model_name}/cv_results_{pd.Timestamp.now().strftime("%Y%m%d")}.csv'
+cv_results_path = f'outputs/{model_name}/cv/cv_results_{pd.Timestamp.now().strftime("%Y%m%d")}.csv'
 cv_results = pd.read_csv(cv_results_path)
 
 if montel_window_match:
@@ -212,11 +212,11 @@ else:
     df_metrics = pd.DataFrame([model_ground], index=[model_name])
 
 # 保存为 CSV
-df_metrics.to_csv(f'outputs/{model_name}/compare_metrics.csv', index=True)
+df_metrics.to_csv(f'outputs/{model_name}/cv/compare_metrics_{pd.Timestamp.now().strftime("%Y%m%d")}.csv', index=True)
 
 # 再随机读取几个窗口进行可视化
 plot_windows_with_time(
     ground_truth, montel_predict, model_predict, time_array,
     horizon=config['data']['prediction_window'], k=config['Montel']['compare_plot_k'],
-    save_dir=f'outputs/{model_name}/window_plots', show=True, rename=model_name
+    save_dir=f'outputs/{model_name}/cv/window_plots', show=True, rename=model_name
 )

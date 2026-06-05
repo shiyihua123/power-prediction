@@ -27,8 +27,8 @@ model = get_model(model_name, config, model_config)
 
 cv_results = model.cross_validate(df_full)
 
-output_path = f'outputs/{model_name}/cv_results_{pd.Timestamp.now().strftime("%Y%m%d")}.csv'
-os.makedirs(f'outputs/{model_name}', exist_ok=True)
+output_path = f'outputs/{model_name}/cv/cv_results_{pd.Timestamp.now().strftime("%Y%m%d")}.csv'
+os.makedirs(f'outputs/{model_name}/cv', exist_ok=True)
 cv_results.to_csv(output_path, index=False)
 
 print(f"cv_results结果已保存到 {output_path}")
