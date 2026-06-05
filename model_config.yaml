@@ -2,11 +2,21 @@
 NHITS:
   params:
     input_size: 1344   # 可选，不写则默认48
-    max_steps: 1
+    max_steps: 5000
     early_stop_patience_steps: 10
     windows_batch_size: 1024
     inference_windows_batch_size: 64
-
+    # 方案三：极致探索
+    n_blocks: [2, 2, 2, 1]        # 保持4个堆栈，增加第三个堆栈的块数以获得更强的非线性
+    mlp_units: [
+        [4096, 2048],  # 进一步强化处理最长周期堆栈的表达能力
+        [2048, 1024],  # 进一步强化处理次长周期堆栈的表达能力
+        [1024, 512],   # 加强处理中等周期堆栈
+        [512, 256]     # 处理高频细节的堆栈保持适度宽度
+    ]
+    n_pool_kernel_size: [32, 16, 8, 1]   # 进一步扩大kernel，使前三个堆栈都聚焦于超长/长周期模式[reference:7]
+    n_freq_downsample: [4, 4, 2, 1]      # 扩展下采样倍数
+    dropout_prob_theta: 0.2   # 推荐范围 0.1 ~ 0.3
 LightGBM:
   params:
     objective: "huber"

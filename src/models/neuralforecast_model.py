@@ -58,7 +58,7 @@ class NeuralForecastModel(BaseModel):
 
 
         futr_exog_list = time_features + future_features
-        hist_exog_list = list(config['data']['files'].keys()) + delta_features
+        hist_exog_list = list(config['data']['files'].keys()) + delta_features + time_features
         self.target_col = config['data']['target_col']
         hist_exog_list.remove(self.target_col)
 
