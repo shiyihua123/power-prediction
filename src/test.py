@@ -24,7 +24,7 @@ model_name = config['model_name']
 df_full = prepare_data(config)
 config['horizon_total'] = config['data']['prediction_window'] + 24
 model = get_model(model_name, config, model_config)
-
+print(df_full)
 cv_results = model.cross_validate(df_full)
 
 output_path = f'outputs/{model_name}/cv/cv_results_{pd.Timestamp.now().strftime("%Y%m%d")}.csv'

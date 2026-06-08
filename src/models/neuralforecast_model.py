@@ -6,15 +6,13 @@ from neuralforecast.losses.pytorch import MAE, HuberLoss
 from .base import BaseModel
 from .model_registry import register_model
 
-# 固定 GPU 计算的确定性（cuDNN 默认会选择非确定性算法以优化速度）
+# 固定 GPU 计算的确定性
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 # 启用 Tensor Cores 以获得更好的性能
 torch.set_float32_matmul_precision('medium')
 
 
-@register_model("BiTCN")
-@register_model("CNN")
 @register_model("DeepNPTS")
 @register_model("DilatedRNN")
 @register_model("GRU")
@@ -58,9 +56,11 @@ class NeuralForecastModel(BaseModel):
 
 
         futr_exog_list = time_features + future_features
-        hist_exog_list = list(config['data']['files'].keys()) + delta_features + time_features
+        hist_exog_list = list(config['data']['files'].keys()) + delta_features
         self.target_col = config['data']['target_col']
         hist_exog_list.remove(self.target_col)
+        for feature in future_features:
+            hist_exog_list.remove(feature)
 
         print(f"futr_exog_list: {futr_exog_list}")
         print(f"hist_exog_list: {hist_exog_list}")
