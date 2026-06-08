@@ -63,6 +63,9 @@ def load_single_series(
     df = df.rename(columns={value_col: Path(filepath).stem})
     return df
 
+def interpolate_data():
+    pass
+
 def load_all_series(file_dict, time_col='date', value_col='value',
                     tz='UTC', fill_method=None, target_freq='h'):
     """
@@ -99,6 +102,16 @@ def load_all_series(file_dict, time_col='date', value_col='value',
     if target_freq:
         # 临时设置时间列为索引进行重采样
         aligned_resampled = aligned.set_index(time_col).resample(target_freq).mean().reset_index()
+        
+        # 统计重采样后产生的缺失值
+        nan_count = aligned_resampled.drop(columns=[time_col]).isnull().sum().sum()
+        if nan_count > 0:
+            # print(f"重采样产生 {nan_count} 个缺失值，使用线性插值填充")
+            print(f"重采样产生 {nan_count} 个缺失值，用backcast曲线")
+            # aligned_resampled = aligned_resampled.set_index(time_col).interpolate(method='linear').reset_index()
+            # 进行断点时间点数据填充，用backcast曲线
+            interpolate_data(aligned_resampled)
+        
         print(f"已重采样到 '{target_freq}'，现有 {len(aligned_resampled)} 个时间点。")
         return aligned_resampled
 
@@ -205,6 +218,7 @@ def add_features(df, config):
             df_feat[feat_name] = df_feat['price_SE3'] - df_feat['price_SE2']
         elif feat_name == 'price_delta_SE4_SE2':
             df_feat[feat_name] = df_feat['price_SE4'] - df_feat['price_SE2']
+
     
     # 转回 UTC
     df_feat[time_col] = df_feat[time_col].dt.tz_convert('UTC')

@@ -165,9 +165,9 @@ if montel_window_match:
 
     # 4. 各自只保留共同时间点的数据
     montel_filtered = montel_pred[montel_pred['begin_utc'].isin(common_times)].sort_values('begin_utc').reset_index(drop=True)
-    model_filtered = cv_results[cv_results['begin_utc'].isin(common_times)].sort_values('begin_utc','ds').reset_index(drop=True)
-    print(montel_filtered.head())
-    print(model_filtered.head())
+    model_filtered = cv_results[cv_results['begin_utc'].isin(common_times)].sort_values(['begin_utc','ds']).reset_index(drop=True)
+    # print(montel_filtered.head())
+    # print(model_filtered.head())
     h_cols = [c for c in montel_filtered.columns if c.startswith("h")]
     h_df = montel_filtered[h_cols]
 
@@ -189,7 +189,8 @@ if montel_window_match:
         'bias': bias(ground_truth, model_predict),
         'wape': wape(ground_truth, model_predict),
     }
-
+    print(f"montel_ground: {montel_ground}")
+    print(f"{model_name}: {model_ground}")
     df_metrics = pd.DataFrame(
         [montel_ground, model_ground],
         index=['Montel', model_name]
@@ -209,9 +210,9 @@ else:
         'bias': bias(ground_truth, model_predict),
         'wape': wape(ground_truth, model_predict),
     }
-
+    print(f"{model_name}: {model_ground}")
     df_metrics = pd.DataFrame([model_ground], index=[model_name])
-
+print()
 # 保存为 CSV
 df_metrics.to_csv(f'outputs/{model_name}/cv/compare_metrics_{pd.Timestamp.now().strftime("%Y%m%d")}.csv', index=True)
 

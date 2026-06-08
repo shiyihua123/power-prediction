@@ -5,9 +5,9 @@ Montel:
   compare_plot_k: 3
 # 训练配置
 training:
-  devices: "4"          # 设备数量（1=单卡）。配合 CUDA_VISIBLE_DEVICES=7 指定具体 GPU
+  devices: "3"          # 设备数量（1=单卡）。配合 CUDA_VISIBLE_DEVICES=7 指定具体 GPU
   seed: 42             # 固定随机种子；注释掉该行则不固定
-  loss: "huber"
+  loss: "mae"
   learning_rate: 0.001
   scaler_type: "robust" # robust\standard
 
@@ -26,9 +26,9 @@ data:
   files:
     price_SE2: 'rawData/SE2_Price_Spot_EUR_MWh_NordPool_15min_Actual/actual_min_to_H_true_latest.csv'
 
-    price_SE1: 'rawData/SE1_Price_Spot_EUR_MWh_NordPool_15min_Actual/actual_min_to_H_true_latest.csv'
-    price_SE3: 'rawData/SE3_Price_Spot_EUR_MWh_NordPool_15min_Actual/actual_min_to_H_true_latest.csv'
-    price_SE4: 'rawData/SE4_Price_Spot_EUR_MWh_NordPool_15min_Actual/actual_min_to_H_true_latest.csv'
+    # price_SE1: 'rawData/SE1_Price_Spot_EUR_MWh_NordPool_15min_Actual/actual_min_to_H_true_latest.csv'
+    # price_SE3: 'rawData/SE3_Price_Spot_EUR_MWh_NordPool_15min_Actual/actual_min_to_H_true_latest.csv'
+    # price_SE4: 'rawData/SE4_Price_Spot_EUR_MWh_NordPool_15min_Actual/actual_min_to_H_true_latest.csv'
 
     # loadidual_SE2: '/home/syh/workplace/PythonProject/power-prediction/rawData/SE2_Residual_Load_MWh_h_H_Actual/MW_latest.csv'
     # SE_Residual_Load: 'rawData/SE_Residual_Load_MWh_h_H_Actual/MW_latest.csv'
@@ -74,15 +74,15 @@ data:
       - "hour_cos"
       - "weekday_sin"
       - "weekday_cos"
-      - "month_sin"
-      - "month_cos"
-      # - "hour"
-      # - "weekday"
+      # - "month_sin"
+      # - "month_cos"
+      - "hour"
+      - "weekday"
       # - "month"
       # - "how_sin"
       # - "how_cos"
-      - "doy_sin"
-      - "doy_cos"
+      # - "doy_sin"
+      # - "doy_cos"
       # - "is_weekend"
       # - "is_workday"
       # - "is_night"
@@ -111,5 +111,5 @@ data:
       # - "SE2_Hydro_Power_Production"
       # - "SE2_Consumption_Temperature"
     delta_features:
-      - "price_delta_SE3_SE2"
-      - "price_delta_SE4_SE2"
+      # - "price_delta_SE3_SE2"
+      # - "price_delta_SE4_SE2"
