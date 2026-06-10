@@ -106,11 +106,16 @@ def load_all_series(file_dict, time_col='date', value_col='value',
         # 统计重采样后产生的缺失值
         nan_count = aligned_resampled.drop(columns=[time_col]).isnull().sum().sum()
         if nan_count > 0:
-            # print(f"重采样产生 {nan_count} 个缺失值，使用线性插值填充")
-            print(f"重采样产生 {nan_count} 个缺失值，用backcast曲线")
-            # aligned_resampled = aligned_resampled.set_index(time_col).interpolate(method='linear').reset_index()
+            # 获取有缺失值的时间点
+            nan_rows = aligned_resampled[aligned_resampled.drop(columns=[time_col]).isnull().any(axis=1)]
+            nan_times = nan_rows[time_col].tolist()
+            print(f"重采样产生 {nan_count} 个缺失值，缺失时间点:")
+            for t in nan_times:
+                print(f"  - {t}")
+            # raise ValueError("backcast曲线未实现")
+            aligned_resampled = aligned_resampled.set_index(time_col).interpolate(method='linear').reset_index()
             # 进行断点时间点数据填充，用backcast曲线
-            interpolate_data(aligned_resampled)
+            # interpolate_data(aligned_resampled)
         
         print(f"已重采样到 '{target_freq}'，现有 {len(aligned_resampled)} 个时间点。")
         return aligned_resampled

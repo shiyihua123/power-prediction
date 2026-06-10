@@ -24,23 +24,24 @@ data:
 
   # 文件字典：列名 -> 文件路径
   files:
-    price_SE2: 'rawData/SE2_Price_Spot_EUR_MWh_NordPool_15min_Actual/actual_min_to_H_true_latest.csv'
+    price_SE2: 'rawData/SE2_Price_Spot_EUR_MWh_NordPool_H_Actual/actual_min_to_H_true_latest.csv'
+
+    # price_SE3: 'rawData/SE3_Price_Spot_EUR_MWh_NordPool_15min_Actual/actual_min_to_H_true_latest.csv'
+    SE_Residual_Load: 'rawData/SE2_Residual_Load_MWh_h_H_Actual/MW_latest.csv'
+    # SE2_SE3_Exchange_Physical_Flow: 'rawData/SE2_SE3_Exchange_Physical_Flow_MWh_h_H_Actual/MW_latest.csv'
+    # SE2_Exchange_Physical_Flow_Net_export: 'rawData/SE2_Exchange_Physical_Flow_Net_export_MWh_h_H_Actual/MW_latest.csv'
 
     # price_SE1: 'rawData/SE1_Price_Spot_EUR_MWh_NordPool_15min_Actual/actual_min_to_H_true_latest.csv'
-    # price_SE3: 'rawData/SE3_Price_Spot_EUR_MWh_NordPool_15min_Actual/actual_min_to_H_true_latest.csv'
     # price_SE4: 'rawData/SE4_Price_Spot_EUR_MWh_NordPool_15min_Actual/actual_min_to_H_true_latest.csv'
-
-    # loadidual_SE2: '/home/syh/workplace/PythonProject/power-prediction/rawData/SE2_Residual_Load_MWh_h_H_Actual/MW_latest.csv'
-    # SE_Residual_Load: 'rawData/SE_Residual_Load_MWh_h_H_Actual/MW_latest.csv'
 
     # SE2_Consumption: 'rawData/SE2_Consumption_MWh_h_H_Actual/MW_latest.csv'
     # SE_Consumption: 'rawData/SE_Consumption_MWh_h_H_Actual/MW_latest.csv'
 
-    # SE2_SE3_Exchange_Physical_Flow: 'rawData/SE2_SE3_Exchange_Physical_Flow_MWh_h_H_Actual/MW_latest.csv'
+
     # SE3_SE2_Exchange_Physical_Flow: 'rawData/SE3_SE2_Exchange_Physical_Flow_MWh_h_H_Actual/MW_latest.csv'
     # SE2_SE1_Exchange_Physical_Flow: 'rawData/SE2_SE1_Exchange_Physical_Flow_MWh_h_H_Actual/MW_latest.csv'
     # SE2_NO4_Exchange_Physical_Flow: 'rawData/SE2_NO4_Exchange_Physical_Flow_MWh_h_H_Actual/MW_latest.csv'
-    # SE2_Exchange_Physical_Flow_Net_export: 'rawData/SE2_Exchange_Physical_Flow_Net_export_MWh_h_H_Actual/MW_latest.csv'
+
     # SE2_Exchange_Physical_Flow_Net_Import: 'rawData/SE2_Exchange_Physical_Flow_Net_Import_MWh_h_H_Actual/MW_latest.csv'
 
     # SE2_Wind_Power_Production: 'rawData/SE2_Wind_Power_Production_MWh_h_H_Actual/MW_latest.csv'
@@ -48,7 +49,11 @@ data:
     # SE2_Hydro_Power_Production: 'rawData/SE2_Hydro_Power_Production_MWh_h_H_Actual/MW_latest.csv'
 
     # SE2_Consumption_Temperature: 'rawData/SE2_Consumption_Temperature_°C_H_Actual/MW_latest.csv'
-  
+
+  forecast_file:
+    SE_Residual_Load: 'rawData/SE2_Residual_Load_MWh_h_H_Forecast/ec_latest.csv'
+
+
   # 时间频率：'h' 表示小时
   insured_date: "auto"   # "auto" = 当天日期，或写 "2026-06-04" 固定日期
   insured_time: "0"
@@ -65,19 +70,19 @@ data:
     end:   "2024-12-31 23:00:00"
   test:
     start: "2025-01-01 00:00:00"
-    end:   "2026-03-01 23:00:00"
+    end:   "2026-06-01 23:00:00"
   
   feature_kwargs:
     local_tz: "Europe/Stockholm"
     time_features:
-      - "hour_sin"
-      - "hour_cos"
-      - "weekday_sin"
-      - "weekday_cos"
+      # - "hour_sin"
+      # - "hour_cos"
+      # - "weekday_sin"
+      # - "weekday_cos"
       # - "month_sin"
       # - "month_cos"
-      - "hour"
-      - "weekday"
+      # - "hour"
+      # - "weekday"
       # - "month"
       # - "how_sin"
       # - "how_cos"
@@ -96,8 +101,7 @@ data:
       # - "utc_offset"
       # - "is_dst"
     future_features:
-      # - "loadidual_SE2"
-      # - "SE_Residual_Load"
+      - "SE_Residual_Load"
       # - "SE2_Consumption"
       # - "SE_Consumption"
       # - "SE2_SE3_Exchange_Physical_Flow"
